@@ -1,24 +1,7 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Section } from "@/components/ui/section";
 import type { RESUME_DATA } from "@/data/resume-data";
 
 type Leadership = (typeof RESUME_DATA)["leadership"][number];
-
-interface LeadershipPeriodProps {
-  start: Leadership["start"];
-  end: Leadership["end"];
-}
-
-function LeadershipPeriod({ start, end }: LeadershipPeriodProps) {
-  return (
-    <div
-      className="shrink-0 whitespace-nowrap text-sm tabular-nums text-gray-500"
-      title={`Period: ${start} to ${end}`}
-    >
-      {start} - {end}
-    </div>
-  );
-}
 
 interface LeadershipItemProps {
   item: Leadership;
@@ -26,34 +9,39 @@ interface LeadershipItemProps {
 
 function LeadershipItem({ item }: LeadershipItemProps) {
   const { title, organization, start, end, description, highlights } = item;
-  const itemId = `leadership-${title.toLowerCase().replace(/\s+/g, "-")}`;
 
   return (
-    <Card className="border-none py-1 print:py-0">
-      <CardHeader className="print:space-y-1">
-        <div className="flex items-start justify-between gap-x-2">
-          <h3 className="font-semibold leading-none print:text-sm" id={itemId}>
-            {title}
-          </h3>
-          <LeadershipPeriod start={start} end={end} />
+    <div className="rounded-sm border-2 border-foreground bg-card p-5 shadow-brutal-sm transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-brutal">
+      <div className="flex flex-col justify-between gap-1 sm:flex-row sm:items-center">
+        <div>
+          <h3 className="text-lg font-bold">{title}</h3>
+          <p className="font-mono text-xs font-semibold text-foreground/60">
+            {organization}
+          </p>
         </div>
-        <h4 className="min-w-0 text-pretty font-mono text-sm font-semibold leading-none print:text-[12px]">
-          {organization}
-        </h4>
-      </CardHeader>
-      <CardContent>
-        <div className="mt-2 text-xs text-foreground/80 print:mt-1 print:text-[10px] text-pretty">
-          {description}
-          {highlights && highlights.length > 0 && (
-            <ul className="list-inside list-disc">
-              {highlights.map((highlight) => (
-                <li key={highlight}>{highlight}</li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+        <span className="shrink-0 font-mono text-xs font-semibold text-foreground/50">
+          {start} — {end}
+        </span>
+      </div>
+
+      <p className="mt-3 text-sm text-foreground/80 leading-relaxed">
+        {description}
+      </p>
+
+      {highlights && highlights.length > 0 && (
+        <ul className="mt-3 space-y-1.5 border-t border-foreground/15 pt-3">
+          {highlights.map((highlight) => (
+            <li
+              key={highlight}
+              className="flex items-start gap-2 text-xs text-foreground/80"
+            >
+              <span className="mt-0.5 text-primary">✦</span>
+              <span>{highlight}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
 
@@ -65,13 +53,14 @@ export function Leadership({ leadership }: LeadershipListProps) {
   return (
     <Section>
       <h2
-        className="border-b-2 border-foreground pb-1 text-xl font-bold"
+        className="flex items-center gap-4 text-2xl font-bold"
         id="leadership-section"
       >
-        Leadership &amp; Activities
+        Beyond the Code
+        <div className="h-px flex-1 bg-foreground/15" aria-hidden="true" />
       </h2>
       <div
-        className="space-y-4 print:space-y-0"
+        className="space-y-4"
         role="feed"
         aria-labelledby="leadership-section"
       >

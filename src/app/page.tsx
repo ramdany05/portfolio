@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { CommandMenu } from "@/components/command-menu";
-import { RESUME_DATA } from "@/data/resume-data";
+import { getPortfolioData } from "@/lib/portfolio-data";
 import { generateResumeStructuredData } from "@/lib/structured-data";
 import { Certifications } from "./components/certifications";
+import { ContactSidebar } from "./components/contact-sidebar";
 import { Education } from "./components/education";
 import { Header } from "./components/header";
 import { Leadership } from "./components/leadership";
@@ -11,46 +12,47 @@ import { Skills } from "./components/skills";
 import { Summary } from "./components/summary";
 import { WorkExperience } from "./components/work-experience";
 
-export const metadata: Metadata = {
-  title: `${RESUME_DATA.name} - Resume`,
-  description: RESUME_DATA.about,
-  openGraph: {
-    title: `${RESUME_DATA.name} - Resume`,
-    description: RESUME_DATA.about,
-    type: "profile",
-    locale: "en_US",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: `${RESUME_DATA.name} - Resume`,
-    description: RESUME_DATA.about,
-  },
-};
-
-/**
- * Transform social links for command menu
- */
-function getCommandMenuLinks() {
-  const links = [];
-
-  if (RESUME_DATA.personalWebsiteUrl) {
-    links.push({
-      url: RESUME_DATA.personalWebsiteUrl,
-      title: "Personal Website",
-    });
-  }
-
-  return [
-    ...links,
-    ...RESUME_DATA.contact.social.map((socialMediaLink) => ({
-      url: socialMediaLink.url,
-      title: socialMediaLink.name,
-    })),
-  ];
+export async function generateMetadata(): Promise<Metadata> {
+  const data = await getPortfolioData();
+  return {
+    title: `${data.name} - Resume`,
+    description: data.about,
+    openGraph: {
+      title: `${data.name} - Resume`,
+      description: data.about,
+      type: "profile",
+      locale: "en_US",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${data.name} - Resume`,
+      description: data.about,
+    },
+  };
 }
 
-export default function ResumePage() {
+export default async function ResumePage() {
+  const data = await getPortfolioData();
   const structuredData = generateResumeStructuredData();
+
+  function getCommandMenuLinks() {
+    const links = [];
+
+    if (data.personalWebsiteUrl) {
+      links.push({
+        url: data.personalWebsiteUrl,
+        title: "Personal Website",
+      });
+    }
+
+    return [
+      ...links,
+      ...data.contact.social.map((socialMediaLink) => ({
+        url: socialMediaLink.url,
+        title: socialMediaLink.name,
+      })),
+    ];
+  }
 
   return (
     <>
@@ -61,62 +63,114 @@ export default function ResumePage() {
           __html: JSON.stringify(structuredData),
         }}
       />
-      <main
-        className="container relative mx-auto scroll-my-12 overflow-auto p-4 print:p-11 md:p-16"
-        id="main-content"
-      >
+      <main className="relative overflow-auto print:p-11" id="main-content">
+        <ContactSidebar />
+
         <div className="sr-only">
-          <h1>{RESUME_DATA.name}&apos;s Resume</h1>
+          <h1>{data.name}&apos;s Resume</h1>
         </div>
 
-        <section
-          className="mx-auto w-full max-w-2xl space-y-8 rounded-lg border-2 border-foreground bg-card p-6 shadow-brutal-lg print:space-y-4 print:border-0 print:p-0 print:shadow-none md:p-8"
-          aria-label="Resume Content"
-        >
-          <div className="animate-fade-in" style={{ animationDelay: "0ms" }}>
+        {/* Hero Section — full viewport */}
+        <section className="print:min-h-0" aria-label="Hero">
+          <div className="animate-fade-in">
             <Header />
           </div>
+        </section>
 
-          <div className="space-y-8 print:space-y-4">
-            <div className="animate-fade-in" style={{ animationDelay: "75ms" }}>
-              <Summary summary={RESUME_DATA.summary} />
-            </div>
-            <div
-              className="animate-fade-in"
-              style={{ animationDelay: "150ms" }}
-            >
-              <Skills skills={RESUME_DATA.skills} />
-            </div>
-            <div
-              className="animate-fade-in"
-              style={{ animationDelay: "225ms" }}
-            >
-              <WorkExperience work={RESUME_DATA.work} />
-            </div>
-            <div
-              className="animate-fade-in"
-              style={{ animationDelay: "300ms" }}
-            >
-              <Projects projects={RESUME_DATA.projects} />
-            </div>
-            <div
-              className="animate-fade-in"
-              style={{ animationDelay: "375ms" }}
-            >
-              <Education education={RESUME_DATA.education} />
-            </div>
-            <div
-              className="animate-fade-in"
-              style={{ animationDelay: "450ms" }}
-            >
-              <Leadership leadership={RESUME_DATA.leadership} />
-            </div>
-            <div
-              className="animate-fade-in"
-              style={{ animationDelay: "525ms" }}
-            >
-              <Certifications certifications={RESUME_DATA.certifications} />
-            </div>
+        {/* About Section */}
+        <section
+          id="about"
+          className="bg-card px-4 py-10 sm:px-6 sm:py-12 md:px-16 md:py-20 print:bg-transparent print:py-4"
+          aria-label="About"
+        >
+          <div
+            className="mx-auto max-w-5xl animate-fade-in"
+            style={{ animationDelay: "75ms" }}
+          >
+            <Summary
+              name={data.name}
+              summary={data.summary}
+              avatarUrl={data.avatarUrl}
+              initials={data.initials}
+            />
+          </div>
+        </section>
+
+        {/* Skills Section */}
+        <section
+          className="border-y-2 border-foreground bg-card px-4 py-8 sm:px-6 sm:py-10 md:px-16 md:py-14 print:border-0 print:bg-transparent print:py-4"
+          aria-label="Skills"
+        >
+          <div
+            className="mx-auto max-w-5xl animate-fade-in"
+            style={{ animationDelay: "150ms" }}
+          >
+            <Skills skills={data.skills} />
+          </div>
+        </section>
+
+        {/* Work Experience Section */}
+        <section
+          className="px-4 py-8 sm:px-6 sm:py-10 md:px-16 md:py-14 print:py-4"
+          aria-label="Work Experience"
+        >
+          <div
+            className="mx-auto max-w-5xl animate-fade-in"
+            style={{ animationDelay: "225ms" }}
+          >
+            <WorkExperience work={data.work} />
+          </div>
+        </section>
+
+        {/* Projects Section */}
+        <section
+          className="border-y-2 border-foreground bg-card px-4 py-8 sm:px-6 sm:py-10 md:px-16 md:py-14 print:border-0 print:bg-transparent print:py-4"
+          aria-label="Projects"
+        >
+          <div
+            className="mx-auto max-w-5xl animate-fade-in"
+            style={{ animationDelay: "300ms" }}
+          >
+            <Projects projects={data.projects} />
+          </div>
+        </section>
+
+        {/* Education Section */}
+        <section
+          className="px-4 py-8 sm:px-6 sm:py-10 md:px-16 md:py-14 print:py-4"
+          aria-label="Education"
+        >
+          <div
+            className="mx-auto max-w-5xl animate-fade-in"
+            style={{ animationDelay: "375ms" }}
+          >
+            <Education education={data.education} />
+          </div>
+        </section>
+
+        {/* Leadership Section */}
+        <section
+          className="border-y-2 border-foreground bg-card px-4 py-8 sm:px-6 sm:py-10 md:px-16 md:py-14 print:border-0 print:bg-transparent print:py-4"
+          aria-label="Leadership"
+        >
+          <div
+            className="mx-auto max-w-5xl animate-fade-in"
+            style={{ animationDelay: "450ms" }}
+          >
+            <Leadership leadership={data.leadership} />
+          </div>
+        </section>
+
+        {/* Certifications Section */}
+        <section
+          className="px-4 py-8 sm:px-6 sm:py-10 md:px-16 md:py-14 print:py-4"
+          aria-label="Certifications"
+        >
+          <div
+            className="mx-auto max-w-5xl animate-fade-in"
+            style={{ animationDelay: "525ms" }}
+          >
+            <Certifications certifications={data.certifications} />
           </div>
         </section>
 

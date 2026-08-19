@@ -1,13 +1,16 @@
-import { GlobeIcon, MailIcon, PhoneIcon } from "lucide-react";
-import type React from "react";
-import { Avatar } from "@/components/avatar";
-import { GitHubIcon, LinkedInIcon } from "@/components/icons";
+import { GlobeIcon, PhoneIcon } from "lucide-react";
+import { RetroGrid } from "@/components/ui/retro-grid";
+import { TextScramble } from "@/components/ui/text-scramble";
+import {
+  EmailIcon,
+  GitHubIcon,
+  InstagramIcon,
+  LinkedInIcon,
+} from "@/components/icons";
 import { XIcon } from "@/components/icons/x-icon";
-import { Button } from "@/components/ui/button";
 import { RESUME_DATA } from "@/data/resume-data";
 import type { IconType } from "@/lib/types";
 
-// Type-safe icon mapping
 const ICON_MAP: Record<
   IconType,
   React.ComponentType<React.SVGProps<SVGSVGElement>>
@@ -15,10 +18,37 @@ const ICON_MAP: Record<
   github: GitHubIcon,
   linkedin: LinkedInIcon,
   x: XIcon,
-  globe: GlobeIcon,
-  mail: MailIcon,
+  globe: null as unknown as React.ComponentType<React.SVGProps<SVGSVGElement>>,
+  mail: PhoneIcon,
   phone: PhoneIcon,
-} as const;
+  instagram: InstagramIcon,
+  email: EmailIcon,
+};
+
+function MobileSocialLinks() {
+  const { contact, personalWebsiteUrl } = RESUME_DATA;
+
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-3 pt-2 print:hidden xl:hidden">
+      {contact.social.map((social) => {
+        const IconComponent = ICON_MAP[social.icon];
+        if (!IconComponent) return null;
+        return (
+          <a
+            key={social.name}
+            href={social.url}
+            aria-label={social.name}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex size-10 items-center justify-center rounded-sm border-2 border-foreground bg-card shadow-brutal-sm transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-brutal"
+          >
+            <IconComponent className="size-4 text-foreground" />
+          </a>
+        );
+      })}
+    </div>
+  );
+}
 
 interface LocationLinkProps {
   location: typeof RESUME_DATA.location;
@@ -27,83 +57,18 @@ interface LocationLinkProps {
 
 function LocationLink({ location, locationLink }: LocationLinkProps) {
   return (
-    <p className="max-w-md items-center text-pretty font-mono text-xs text-foreground">
+    <p className="items-center text-pretty font-mono text-sm text-foreground/70">
       <a
-        className="inline-flex gap-x-1.5 align-baseline leading-none hover:underline"
+        className="inline-flex gap-x-2 align-baseline leading-none hover:underline"
         href={locationLink}
         target="_blank"
         rel="noopener noreferrer"
         aria-label={`Location: ${location}`}
       >
-        <GlobeIcon className="size-3" aria-hidden="true" />
+        <GlobeIcon className="size-4" aria-hidden="true" />
         {location}
       </a>
     </p>
-  );
-}
-
-interface SocialButtonProps {
-  href: string;
-  iconType: IconType;
-  label: string;
-}
-
-function SocialButton({ href, iconType, label }: SocialButtonProps) {
-  const IconComponent = ICON_MAP[iconType];
-
-  return (
-    <Button className="size-8" variant="outline" size="icon" asChild={true}>
-      <a
-        href={href}
-        aria-label={label}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <IconComponent className="size-4" aria-hidden="true" />
-      </a>
-    </Button>
-  );
-}
-
-interface ContactButtonsProps {
-  contact: typeof RESUME_DATA.contact;
-  personalWebsiteUrl?: string;
-}
-
-function ContactButtons({ contact, personalWebsiteUrl }: ContactButtonsProps) {
-  return (
-    <ul
-      className="flex list-none gap-x-1 pt-1 font-mono text-sm text-foreground/80 print:hidden"
-      aria-label="Contact links"
-    >
-      {personalWebsiteUrl && (
-        <li>
-          <SocialButton
-            href={personalWebsiteUrl}
-            iconType="globe"
-            label="Personal website"
-          />
-        </li>
-      )}
-      {contact.tel && (
-        <li>
-          <SocialButton
-            href={`tel:${contact.tel}`}
-            iconType="phone"
-            label="Phone"
-          />
-        </li>
-      )}
-      {contact.social.map((social) => (
-        <li key={social.name}>
-          <SocialButton
-            href={social.url}
-            iconType={social.icon}
-            label={social.name}
-          />
-        </li>
-      ))}
-    </ul>
   );
 }
 
@@ -150,16 +115,66 @@ function PrintContact({ contact, personalWebsiteUrl }: PrintContactProps) {
 }
 
 /**
- * Header component displaying personal information and contact details
+ * Scroll-down indicator arrow
+ */
+function ScrollIndicator() {
+  return (
+    <div className="absolute bottom-8 left-1/2 -translate-x-1/2 print:hidden">
+      <a
+        href="#about"
+        className="flex flex-col items-center gap-2 text-foreground/40 transition-colors hover:text-foreground/70"
+        aria-label="Scroll to content"
+      >
+        <span className="font-mono text-xs tracking-widest uppercase">
+          Scroll
+        </span>
+        <svg
+          className="size-5 animate-bounce"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
+      </a>
+    </div>
+  );
+}
+
+/**
+ * Hero section — full viewport intro
  */
 export function Header() {
   return (
-    <header className="flex items-center justify-between">
-      <div className="flex-1 space-y-1.5">
-        <h1 className="text-3xl font-bold tracking-tight" id="resume-name">
+    <header className="relative flex min-h-screen flex-col items-center justify-center gap-8 px-6 text-center print:min-h-0 print:flex-row print:items-center print:text-left print:gap-4">
+      <RetroGrid />
+
+      <div className="z-10 space-y-4 print:space-y-1">
+        <h1
+          className="text-5xl font-bold tracking-tight md:text-7xl"
+          id="resume-name"
+        >
           {RESUME_DATA.name}
         </h1>
-        <p className="max-w-md text-pretty font-mono text-sm text-foreground/80 print:text-[12px]">
+
+        <div className="inline-block border-2 border-foreground bg-card px-5 py-2.5 shadow-brutal-sm">
+          <TextScramble
+            duration={1.2}
+            speed={0.02}
+            as="p"
+            className="font-mono text-sm font-semibold tracking-wide md:text-lg"
+          >
+            Turning ideas into products
+          </TextScramble>
+        </div>
+
+        <p className="mx-auto max-w-xl text-pretty font-mono text-base text-foreground/70 md:text-lg print:mx-0 print:text-[12px]">
           {RESUME_DATA.about}
         </p>
 
@@ -168,10 +183,7 @@ export function Header() {
           locationLink={RESUME_DATA.locationLink}
         />
 
-        <ContactButtons
-          contact={RESUME_DATA.contact}
-          personalWebsiteUrl={RESUME_DATA.personalWebsiteUrl}
-        />
+        <MobileSocialLinks />
 
         <PrintContact
           contact={RESUME_DATA.contact}
@@ -179,12 +191,7 @@ export function Header() {
         />
       </div>
 
-      <Avatar
-        className="size-28 border-2 border-foreground shadow-brutal"
-        src={RESUME_DATA.avatarUrl}
-        alt={`${RESUME_DATA.name}'s profile picture`}
-        fallback={RESUME_DATA.initials}
-      />
+      <ScrollIndicator />
     </header>
   );
 }

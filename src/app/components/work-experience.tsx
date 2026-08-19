@@ -1,209 +1,26 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Section } from "@/components/ui/section";
 import type { RESUME_DATA } from "@/data/resume-data";
 import { cn } from "@/lib/utils";
 
 type WorkExperience = (typeof RESUME_DATA)["work"][number];
-type WorkBadges = readonly string[];
-
-interface BadgeListProps {
-  className?: string;
-  badges: WorkBadges;
-  ariaLabel?: string;
-}
-
-/**
- * Renders a list of badges for work experience
- * Handles both mobile and desktop layouts through className prop
- */
-function BadgeList({ className, badges, ariaLabel }: BadgeListProps) {
-  if (badges.length === 0) return null;
-
-  return (
-    <ul
-      className={cn("inline-flex list-none gap-x-1 p-0", className)}
-      aria-label={ariaLabel}
-    >
-      {badges.map((badge) => (
-        <li key={badge}>
-          <Badge
-            variant="secondary"
-            className="align-middle text-xs print:px-1 print:py-0.5 print:text-[8px] print:leading-tight"
-          >
-            {badge}
-          </Badge>
-        </li>
-      ))}
-    </ul>
-  );
-}
 
 interface WorkPeriodProps {
   start: WorkExperience["start"];
   end?: WorkExperience["end"];
 }
 
-/**
- * Displays the work period in a consistent format
- */
 function WorkPeriod({ start, end }: WorkPeriodProps) {
   return (
-    <div
-      className="shrink-0 whitespace-nowrap text-sm tabular-nums text-gray-500"
+    <p
+      className="font-mono text-xs font-semibold text-foreground/60 md:text-sm"
       title={`Employment period: ${start} to ${end ?? "Present"}`}
     >
-      {start} - {end ?? "Present"}
-    </div>
-  );
-}
-
-interface CompanyLinkProps {
-  company: WorkExperience["company"];
-  link: WorkExperience["link"];
-}
-
-/**
- * Renders company name with optional link
- */
-function CompanyLink({ company, link }: CompanyLinkProps) {
-  if (!link) {
-    return <span>{company}</span>;
-  }
-
-  return (
-    <a
-      className="inline-flex items-center gap-1 underline decoration-foreground/30 underline-offset-2 hover:decoration-foreground"
-      href={link}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={`${company} website`}
-    >
-      {company}
-    </a>
-  );
-}
-
-interface WorkExperienceItemProps {
-  work: WorkExperience;
-}
-
-/**
- * Hook to detect when an element enters the viewport
- * Disconnects after first intersection for performance
- */
-function useInView(threshold = 0.1) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
-
-  const setRef = useCallback(
-    (node: HTMLDivElement | null) => {
-      if (!node) return;
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            setInView(true);
-            observer.disconnect();
-          }
-        },
-        { threshold, rootMargin: "0px 0px -40px 0px" }
-      );
-      observer.observe(node);
-      (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
-      return () => observer.disconnect();
-    },
-    [threshold]
-  );
-
-  return { ref: setRef, inView };
-}
-
-interface TimelineItemProps {
-  work: WorkExperience;
-}
-
-/**
- * Wraps a work experience item with an animated timeline bullet dot
- * A single continuous vertical line is rendered on the parent container
- */
-function TimelineItem({ work }: TimelineItemProps) {
-  const { ref, inView } = useInView(0.1);
-
-  return (
-    <div ref={ref} className="relative pl-10 print:pl-0">
-      {/* Timeline bullet dot */}
-      <div
-        className={cn(
-          "absolute left-[10px] top-1.5 size-3 rounded-full border-2 border-foreground bg-card transition-all duration-500 print:hidden",
-          inView ? "scale-100 opacity-100" : "scale-0 opacity-0"
-        )}
-        aria-hidden="true"
-      />
-      <WorkExperienceItem work={work} />
-    </div>
-  );
-}
-
-/**
- * Individual work experience card component
- * Handles responsive layout for badges (mobile/desktop)
- */
-function WorkExperienceItem({ work }: WorkExperienceItemProps) {
-  const {
-    company,
-    link,
-    badges,
-    techBadges,
-    title,
-    start,
-    end,
-    description,
-    highlights,
-  } = work;
-
-  return (
-    <Card className="border-none py-1 print:py-0">
-      <CardHeader className="print:space-y-1">
-        <div className="flex items-center justify-between gap-x-2 text-base">
-          <h3 className="font-semibold leading-none print:text-sm">{title}</h3>
-          <BadgeList
-            className="gap-x-1"
-            badges={badges}
-            ariaLabel="Work type"
-          />
-        </div>
-
-        <div className="flex items-start justify-between gap-x-2">
-          <h4 className="min-w-0 text-pretty font-mono text-sm font-semibold print:text-[12px]">
-            <CompanyLink company={company} link={link} />
-          </h4>
-          <WorkPeriod start={start} end={end} />
-        </div>
-      </CardHeader>
-
-      <CardContent>
-        <div className="mt-2 text-xs text-foreground/80 print:mt-1 print:text-[10px] text-pretty">
-          {description}
-          {highlights && highlights.length > 0 && (
-            <ul className="list-inside list-disc">
-              {highlights.map((highlight) => (
-                <li key={highlight}>{highlight}</li>
-              ))}
-            </ul>
-          )}
-        </div>
-        <div className="mt-2">
-          <BadgeList
-            className="-mx-2 flex-wrap gap-1"
-            badges={techBadges}
-            ariaLabel="Technologies used"
-          />
-        </div>
-      </CardContent>
-    </Card>
+      {start} — {end ?? "Present"}
+    </p>
   );
 }
 
@@ -212,54 +29,144 @@ interface WorkExperienceProps {
 }
 
 /**
- * Main work experience section component
- * Renders a list of work experiences in chronological order
+ * Work Experience section — tabbed layout.
+ * Mobile: Clean horizontal pill selector + Card view.
+ * Desktop: Vertical sidebar tabs + Details panel.
  */
 export function WorkExperience({ work }: WorkExperienceProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [lineVisible, setLineVisible] = useState(false);
-
-  useEffect(() => {
-    const el = containerRef.current;
-    if (el) {
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            setLineVisible(true);
-            observer.disconnect();
-          }
-        },
-        { threshold: 0.1 }
-      );
-      observer.observe(el);
-      return () => observer.disconnect();
-    }
-  }, []);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const active = work[activeIndex];
 
   return (
     <Section>
-      <h2
-        className="border-b-2 border-foreground pb-1 text-xl font-bold"
-        id="work-experience"
-      >
-        Work Experience
-      </h2>
-      <div
-        ref={containerRef}
-        className="relative space-y-4 print:space-y-0"
-        role="feed"
-        aria-labelledby="work-experience"
-      >
-        {/* Single continuous vertical timeline line connecting all bullets */}
+      {/* Section header */}
+      <div className="flex items-center gap-4">
+        <h2
+          className="flex items-center gap-2 text-2xl font-bold"
+          id="work-experience"
+        >
+          Where I&apos;ve Worked
+        </h2>
+        <div className="h-px flex-1 bg-foreground/15" aria-hidden="true" />
+      </div>
+
+      {/* Content container */}
+      <div className="flex flex-col gap-6 md:flex-row print:gap-4">
+        {/* Mobile Tabs: Horizontal Pills with smooth scroll */}
+        {/* Desktop Tabs: Vertical left sidebar */}
         <div
-          className={cn(
-            "absolute left-[15px] top-3 w-0.5 bg-foreground/20 transition-all duration-700 ease-out print:hidden",
-            lineVisible ? "h-[calc(100%-1.5rem)] opacity-100" : "h-0 opacity-0"
-          )}
-          aria-hidden="true"
-        />
+          className="flex flex-row gap-2 overflow-x-auto pb-2 pt-1 no-scrollbar md:w-1/4 md:flex-col md:gap-1 md:overflow-x-visible md:pb-0 md:pt-0 md:border-l-2 md:border-foreground/20 print:hidden"
+          role="tablist"
+          aria-label="Work experiences"
+        >
+          {work.map((item, index) => (
+            <button
+              key={`${item.company}-${item.start}`}
+              type="button"
+              onClick={() => setActiveIndex(index)}
+              className={cn(
+                "shrink-0 rounded-sm px-4 py-2.5 text-left font-mono text-xs font-bold transition-all duration-150 sm:text-sm md:rounded-none md:border-l-2 md:px-4 md:py-3",
+                index === activeIndex
+                  ? "border-2 border-foreground bg-primary text-primary-foreground shadow-brutal-sm md:-ml-[2px] md:border-l-2 md:border-t-0 md:border-r-0 md:border-b-0 md:border-foreground md:bg-transparent md:text-foreground md:shadow-none"
+                  : "border-2 border-foreground/20 bg-card text-foreground/70 hover:border-foreground hover:text-foreground md:border-transparent md:bg-transparent md:text-foreground/50 md:hover:border-foreground/40"
+              )}
+              aria-selected={index === activeIndex}
+              role="tab"
+            >
+              {item.company}
+            </button>
+          ))}
+        </div>
+
+        {/* Details Panel - Card container on mobile, clean details on desktop */}
+        <div
+          className="flex-1 rounded-sm border-2 border-foreground bg-card p-5 shadow-brutal md:border-0 md:bg-transparent md:p-0 md:shadow-none"
+          role="tabpanel"
+        >
+          <div className="mb-4 space-y-1 md:mb-6">
+            <h3 className="text-lg font-bold sm:text-xl">
+              {active.title}
+              <span className="text-foreground/50"> @ </span>
+              {active.link ? (
+                <a
+                  href={active.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline decoration-foreground/30 underline-offset-2 hover:decoration-foreground"
+                >
+                  {active.company}
+                </a>
+              ) : (
+                active.company
+              )}
+            </h3>
+            <WorkPeriod start={active.start} end={active.end} />
+          </div>
+
+          {/* Description + Highlights */}
+          <div className="space-y-4">
+            <p className="text-pretty text-xs leading-relaxed text-foreground/80 sm:text-sm">
+              {active.description}
+            </p>
+
+            {active.highlights && active.highlights.length > 0 && (
+              <ul className="space-y-2.5" aria-label="Highlights">
+                {active.highlights.map((highlight) => (
+                  <li
+                    key={highlight}
+                    className="flex items-start gap-2.5 text-xs text-foreground/80 sm:text-sm"
+                  >
+                    <span
+                      className="mt-0.5 shrink-0 text-primary"
+                      aria-hidden="true"
+                    >
+                      ✦
+                    </span>
+                    <span className="text-pretty">{highlight}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {/* Tech badges */}
+            {active.techBadges && active.techBadges.length > 0 && (
+              <div className="flex flex-wrap gap-2 pt-2">
+                {active.techBadges.map((tech) => (
+                  <Badge
+                    key={tech}
+                    variant="secondary"
+                    className="text-xs print:text-[10px]"
+                  >
+                    {tech}
+                  </Badge>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Print: show all experiences linearly */}
+      <div className="hidden print:block print:space-y-6">
         {work.map((item) => (
-          <TimelineItem key={`${item.company}-${item.start}`} work={item} />
+          <div key={`${item.company}-${item.start}-print`}>
+            <div className="mb-2">
+              <h3 className="text-sm font-semibold">
+                {item.title} @ {item.company}
+              </h3>
+              <p className="font-mono text-[10px] text-gray-500">
+                {item.start} — {item.end ?? "Present"}
+              </p>
+            </div>
+            <p className="text-[10px] text-foreground/70">{item.description}</p>
+            {item.highlights && item.highlights.length > 0 && (
+              <ul className="mt-1 list-inside list-disc text-[10px] text-foreground/70">
+                {item.highlights.map((h) => (
+                  <li key={h}>{h}</li>
+                ))}
+              </ul>
+            )}
+          </div>
         ))}
       </div>
     </Section>

@@ -66,6 +66,15 @@ module.exports = {
         "brutal-sm": "2px 2px 0 0 hsl(var(--foreground))",
         "brutal-lg": "6px 6px 0 0 hsl(var(--foreground))",
       },
+      animation: {
+        grid: "grid 15s linear infinite",
+      },
+      keyframes: {
+        grid: {
+          "0%": { transform: "translateY(-50%)" },
+          "100%": { transform: "translateY(0)" },
+        },
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],

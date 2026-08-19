@@ -6,9 +6,9 @@ export const RESUME_DATA: ResumeData = {
   location: "Indonesia, WIB",
   locationLink: "https://www.google.com/maps/place/Indonesia",
   about:
-    "Backend Engineer building products that solve real-world problems through software.",
+    "Software Engineer building products that solve real-world problems through software.",
   summary:
-    "Fresh graduate with a Bachelor's degree in Information Systems and hands-on experience developing enterprise applications, e-commerce platforms, and offline-first POS systems. Skilled in backend development using Java, Spring Boot, Express.js, PostgreSQL, and MySQL, with a strong foundation in REST API development, database design, authorization systems, and cloud-based solutions.",
+    "Fresh graduate with a Bachelor's degree in Information Systems and hands-on experience developing enterprise applications, e-commerce platforms, and offline-first POS systems. Skilled in software development using Java, Spring Boot, Express.js, PostgreSQL, and MySQL, with a strong foundation in REST API development, database design, authorization systems, and cloud-based solutions.",
   avatarUrl: "/avatar.png",
   personalWebsiteUrl: "",
   contact: {
@@ -24,6 +24,16 @@ export const RESUME_DATA: ResumeData = {
         name: "LinkedIn",
         url: "https://linkedin.com/in/suhandi-ramdany",
         icon: "linkedin",
+      },
+      {
+        name: "Instagram",
+        url: "https://instagram.com/ramdany05",
+        icon: "instagram",
+      },
+      {
+        name: "Email",
+        url: "mailto:suhandiramdany@gmail.com",
+        icon: "email",
       },
     ],
   },
@@ -121,29 +131,34 @@ export const RESUME_DATA: ResumeData = {
     },
   ],
   skills: [
-    "Java",
-    "JavaScript",
-    "TypeScript",
-    "Spring Boot",
-    "Express.js",
-    "Laravel",
-    "REST API",
-    "Socket.IO",
-    "MySQL",
-    "PostgreSQL",
-    "MongoDB",
-    "Redis",
-    "RBAC",
-    "System Design",
-    "Docker",
-    "CI/CD",
-    "Git",
-    "OpenAPI/Swagger",
-    "GCP",
-    "React.js",
-    "Inertia.js",
-    "OpenAI API",
-    "LLM Integration",
+    {
+      category: "Languages",
+      items: ["Java", "JavaScript", "TypeScript"],
+    },
+    {
+      category: "Backend",
+      items: ["Spring Boot", "Express.js", "Laravel", "REST API", "Socket.IO"],
+    },
+    {
+      category: "Frontend",
+      items: ["React.js", "Inertia.js"],
+    },
+    {
+      category: "Databases",
+      items: ["MySQL", "PostgreSQL", "MongoDB", "Redis"],
+    },
+    {
+      category: "DevOps & Tools",
+      items: ["Docker", "CI/CD", "Git", "OpenAPI/Swagger", "GCP"],
+    },
+    {
+      category: "Architecture",
+      items: ["RBAC", "System Design"],
+    },
+    {
+      category: "AI & ML",
+      items: ["OpenAI API", "LLM Integration"],
+    },
   ],
   certifications: [
     {
@@ -174,6 +189,8 @@ export const RESUME_DATA: ResumeData = {
   projects: [
     {
       title: "JobMatch",
+      image: "/projects/job-match.png",
+      images: ["/projects/job-match.png"],
       techStack: [
         "TypeScript",
         "Java",
@@ -182,7 +199,18 @@ export const RESUME_DATA: ResumeData = {
         "PostgreSQL",
       ],
       description:
+        "Full-stack job-aggregation platform serving 1,677+ live Indonesian tech jobs from 5 sources.",
+      detailedDescription:
         "Full-stack job-aggregation platform serving 1,677+ live Indonesian tech jobs from 5 sources. Engineered a multi-strategy scraping pipeline (public APIs, Playwright headless browsers with anti-bot bypass) refreshing every 5 minutes, plus a per-user match scoring engine with automated Telegram alerts.",
+      role: "Lead Fullstack Developer",
+      duration: "2024",
+      features: [
+        "Multi-strategy scraping pipeline refreshing every 5 minutes",
+        "Bypass anti-bot mechanisms using Playwright headless browsers",
+        "Per-user match scoring engine for tailored job recommendations",
+        "Automated instant notifications via Telegram integration",
+      ],
+      github: "https://github.com/ramdany05/jobmatch",
       link: {
         label: "job-m.netlify.app",
         href: "https://job-m.netlify.app",
@@ -192,13 +220,35 @@ export const RESUME_DATA: ResumeData = {
       title: "Sistem Kompensasi",
       techStack: ["React.js", "TypeScript", "Tailwind CSS", "Context API"],
       description:
-        "Solo-built compensation management web app with multi-module dashboard covering position management, job evaluation, compensation calculation, approval workflows, and reporting. Academic HRIS project (case study: PT Linkar Aneka Konstruksi Indonesia).",
+        "Solo-built compensation management web app with multi-module dashboard covering position management, job evaluation, compensation calculation, approval workflows, and reporting.",
+      detailedDescription:
+        "Solo-built compensation management web app with multi-module dashboard covering position management, job evaluation, compensation calculation, approval workflows, and reporting. Developed as an Academic HRIS project with a case study on PT Linkar Aneka Konstruksi Indonesia.",
+      role: "Solo Developer",
+      duration: "2024",
+      features: [
+        "Position management and hierarchy structure",
+        "Job evaluation and point factor method calculation",
+        "Automated compensation and benefits grading",
+        "Multi-level approval workflows and audit-ready reports",
+      ],
+      github: "https://github.com/ramdany05/sistem-kompensasi",
     },
     {
       title: "Kulineran Pakansari",
       techStack: ["React.js", "TypeScript", "Tailwind CSS", "Google Maps"],
       description:
-        "Solo-built restaurant discovery and recommendation web app for the Pakansari area, featuring category-based search, recommendations, and interactive mapping via Google Maps Embed. Academic GIS project.",
+        "Solo-built restaurant discovery and recommendation web app for the Pakansari area, featuring category-based search, recommendations, and interactive mapping.",
+      detailedDescription:
+        "Solo-built restaurant discovery and recommendation web app for the Pakansari area, featuring category-based search, recommendations, and interactive mapping via Google Maps Embed API. Built as an academic GIS project to aid local food exploration.",
+      role: "Solo Developer",
+      duration: "2024",
+      features: [
+        "Interactive Google Maps Embed integration",
+        "Category and tag-based culinary search filter",
+        "Localized food recommendations",
+        "Responsive, mobile-friendly layout",
+      ],
+      github: "https://github.com/ramdany05/kulineran-pakansari",
     },
   ],
 } as const;
