@@ -24,6 +24,18 @@ import { cn } from "@/lib/utils";
 
 type Project = (typeof RESUME_DATA)["projects"][number];
 
+// Format "YYYY-MM" to "Mon YYYY"
+function formatDate(dateStr?: string) {
+  if (!dateStr) return null;
+  const [year, month] = dateStr.split("-");
+  if (!month) return year; // plain year fallback
+  const date = new Date(Number(year), Number(month) - 1);
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    year: "numeric",
+  });
+}
+
 interface ProjectImageProps {
   title: string;
   image?: string;
@@ -374,9 +386,25 @@ interface ProjectCardProps {
 }
 
 function ProjectCard({ project, index, onOpenDetails }: ProjectCardProps) {
-  const { title, description, techStack, image, images, github, link } =
-    project;
+  const {
+    title,
+    description,
+    techStack,
+    image,
+    images,
+    start_date,
+    end_date,
+    github,
+    link,
+  } = project;
   const isReversed = index % 2 !== 0;
+
+  const formattedStart = formatDate(start_date);
+  const formattedEnd = end_date ? formatDate(end_date) : "Present";
+  const dateDisplay =
+    formattedStart || formattedEnd
+      ? `${formattedStart || ""}${formattedStart && formattedEnd ? " — " : ""}${formattedEnd || ""}`
+      : null;
 
   return (
     <article
@@ -398,9 +426,12 @@ function ProjectCard({ project, index, onOpenDetails }: ProjectCardProps) {
       {/* Content */}
       <div className={cn("space-y-4", isReversed && "md:[direction:ltr]")}>
         <div>
-          <p className="mb-1 font-mono text-sm font-semibold text-foreground/50">
-            Featured Project
-          </p>
+          <div className="mb-1 flex flex-wrap items-center justify-between gap-2 font-mono text-sm font-semibold text-foreground/50">
+            <span>Featured Project</span>
+            {dateDisplay && (
+              <span className="text-xs text-foreground/60">{dateDisplay}</span>
+            )}
+          </div>
           <h3
             onClick={() => onOpenDetails(project)}
             onKeyDown={(e) => {
