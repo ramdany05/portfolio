@@ -38,6 +38,8 @@ export function ProjectsManager({ initialProjects }: ProjectsManagerProps) {
   const [projects, setProjects] = useState<Project[]>(initialProjects);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [techInput, setTechInput] = useState("");
+  const [featureInput, setFeatureInput] = useState("");
 
   const supabase = createClient();
 
@@ -152,15 +154,17 @@ export function ProjectsManager({ initialProjects }: ProjectsManagerProps) {
         </div>
 
         <Button
-          onClick={() =>
+          onClick={() => {
             setEditingProject({
               title: "",
               description: "",
               tech_stack: [],
               features: [],
               images: [],
-            })
-          }
+            });
+            setTechInput("");
+            setFeatureInput("");
+          }}
           className="flex items-center gap-2"
         >
           <PlusIcon className="size-4" />
@@ -186,7 +190,11 @@ export function ProjectsManager({ initialProjects }: ProjectsManagerProps) {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setEditingProject(project)}
+                onClick={() => {
+                  setEditingProject(project);
+                  setTechInput("");
+                  setFeatureInput("");
+                }}
               >
                 Edit
               </Button>
@@ -320,6 +328,181 @@ export function ProjectsManager({ initialProjects }: ProjectsManagerProps) {
               }
               className="w-full rounded-sm border border-foreground bg-background p-2 text-sm"
             />
+          </div>
+
+          {/* Tech Stack (Tags) */}
+          <div className="space-y-2">
+            <label className="block text-xs font-mono font-bold">
+              Technologies / Tech Stack (Tags)
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={techInput}
+                onChange={(e) => setTechInput(e.target.value)}
+                placeholder="Add tech (e.g. React, TypeScript)..."
+                className="flex-1 rounded-sm border border-foreground bg-background p-2 text-sm"
+              />
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => {
+                  if (techInput.trim()) {
+                    setEditingProject({
+                      ...editingProject,
+                      tech_stack: [
+                        ...(editingProject.tech_stack || []),
+                        techInput.trim(),
+                      ],
+                    });
+                    setTechInput("");
+                  }
+                }}
+              >
+                Add Tag
+              </Button>
+            </div>
+
+            <div className="flex flex-wrap gap-2 pt-1">
+              {editingProject.tech_stack?.map((tech, idx) => (
+                <span
+                  key={tech}
+                  className="inline-flex items-center gap-1.5 rounded-sm border border-foreground bg-accent px-2 py-1 text-xs font-semibold"
+                >
+                  <span>{tech}</span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setEditingProject({
+                        ...editingProject,
+                        tech_stack: editingProject.tech_stack.filter(
+                          (_, i) => i !== idx
+                        ),
+                      })
+                    }
+                    className="text-destructive font-bold hover:scale-125"
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Key Features */}
+          <div className="space-y-2">
+            <label className="block text-xs font-mono font-bold">
+              Key Features & Highlights
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={featureInput}
+                onChange={(e) => setFeatureInput(e.target.value)}
+                placeholder="Add feature highlight..."
+                className="flex-1 rounded-sm border border-foreground bg-background p-2 text-sm"
+              />
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => {
+                  if (featureInput.trim()) {
+                    setEditingProject({
+                      ...editingProject,
+                      features: [
+                        ...(editingProject.features || []),
+                        featureInput.trim(),
+                      ],
+                    });
+                    setFeatureInput("");
+                  }
+                }}
+              >
+                Add Feature
+              </Button>
+            </div>
+
+            <ul className="space-y-1 pt-1">
+              {editingProject.features?.map((feature, idx) => (
+                <li
+                  key={feature}
+                  className="flex items-center justify-between rounded-sm border border-foreground/20 p-2 text-xs"
+                >
+                  <span>✦ {feature}</span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setEditingProject({
+                        ...editingProject,
+                        features: editingProject.features.filter(
+                          (_, i) => i !== idx
+                        ),
+                      })
+                    }
+                    className="ml-2 font-bold text-destructive"
+                  >
+                    ×
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* External Links */}
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div>
+              <label className="block text-xs font-mono font-bold mb-1">
+                GitHub Repository URL
+              </label>
+              <input
+                type="url"
+                placeholder="https://github.com/..."
+                value={editingProject.github_url || ""}
+                onChange={(e) =>
+                  setEditingProject({
+                    ...editingProject,
+                    github_url: e.target.value,
+                  })
+                }
+                className="w-full rounded-sm border border-foreground bg-background p-2 text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-mono font-bold mb-1">
+                Live Demo URL
+              </label>
+              <input
+                type="url"
+                placeholder="https://..."
+                value={editingProject.live_link_url || ""}
+                onChange={(e) =>
+                  setEditingProject({
+                    ...editingProject,
+                    live_link_url: e.target.value,
+                  })
+                }
+                className="w-full rounded-sm border border-foreground bg-background p-2 text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-mono font-bold mb-1">
+                Live Demo Label
+              </label>
+              <input
+                type="text"
+                placeholder="job-m.netlify.app"
+                value={editingProject.live_link_label || ""}
+                onChange={(e) =>
+                  setEditingProject({
+                    ...editingProject,
+                    live_link_label: e.target.value,
+                  })
+                }
+                className="w-full rounded-sm border border-foreground bg-background p-2 text-sm"
+              />
+            </div>
           </div>
 
           {/* Image Uploader & Gallery Preview */}
