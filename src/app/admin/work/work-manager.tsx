@@ -256,6 +256,122 @@ export function WorkManager({ initialWork }: WorkManagerProps) {
             />
           </div>
 
+          {/* Badges (e.g. Remote, On Site) */}
+          <div className="space-y-2">
+            <label className="block text-xs font-mono font-bold">
+              Employment Badges (e.g. Remote, On Site, Full-time)
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={badgeInput}
+                onChange={(e) => setBadgeInput(e.target.value)}
+                placeholder="Add badge (e.g. Remote)..."
+                className="flex-1 rounded-sm border border-foreground bg-background p-2 text-sm"
+              />
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => {
+                  if (badgeInput.trim()) {
+                    setEditingWork({
+                      ...editingWork,
+                      badges: [
+                        ...(editingWork.badges || []),
+                        badgeInput.trim(),
+                      ],
+                    });
+                    setBadgeInput("");
+                  }
+                }}
+              >
+                Add Badge
+              </Button>
+            </div>
+
+            <div className="flex flex-wrap gap-2 pt-1">
+              {editingWork.badges?.map((badge, idx) => (
+                <span
+                  key={badge}
+                  className="inline-flex items-center gap-1.5 rounded-sm border border-foreground bg-accent px-2 py-1 text-xs font-semibold"
+                >
+                  <span>{badge}</span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setEditingWork({
+                        ...editingWork,
+                        badges: editingWork.badges.filter((_, i) => i !== idx),
+                      })
+                    }
+                    className="text-destructive font-bold hover:scale-125"
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Tech Badges */}
+          <div className="space-y-2">
+            <label className="block text-xs font-mono font-bold">
+              Tech Stack Badges (e.g. Java, Spring Boot, React)
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={techBadgeInput}
+                onChange={(e) => setTechBadgeInput(e.target.value)}
+                placeholder="Add tech badge (e.g. React)..."
+                className="flex-1 rounded-sm border border-foreground bg-background p-2 text-sm"
+              />
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => {
+                  if (techBadgeInput.trim()) {
+                    setEditingWork({
+                      ...editingWork,
+                      tech_badges: [
+                        ...(editingWork.tech_badges || []),
+                        techBadgeInput.trim(),
+                      ],
+                    });
+                    setTechBadgeInput("");
+                  }
+                }}
+              >
+                Add Tech
+              </Button>
+            </div>
+
+            <div className="flex flex-wrap gap-2 pt-1">
+              {editingWork.tech_badges?.map((tech, idx) => (
+                <span
+                  key={tech}
+                  className="inline-flex items-center gap-1.5 rounded-sm border border-foreground bg-accent px-2 py-1 text-xs font-semibold"
+                >
+                  <span>{tech}</span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setEditingWork({
+                        ...editingWork,
+                        tech_badges: editingWork.tech_badges.filter(
+                          (_, i) => i !== idx
+                        ),
+                      })
+                    }
+                    className="text-destructive font-bold hover:scale-125"
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
+          </div>
+
           {/* Highlights */}
           <div className="space-y-2">
             <label className="block text-xs font-mono font-bold">
