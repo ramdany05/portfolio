@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { revalidatePortfolio } from "@/app/actions/revalidate";
 import { Button } from "@/components/ui/button";
 
 interface Profile {
@@ -57,6 +58,7 @@ export function ProfileManager({ initialProfile }: ProfileManagerProps) {
         setMessage(`Error updating profile: ${error.message}`);
       } else {
         setMessage("Profile updated successfully!");
+        await revalidatePortfolio();
       }
     } else {
       const { data, error } = await supabase
@@ -70,6 +72,7 @@ export function ProfileManager({ initialProfile }: ProfileManagerProps) {
       } else if (data) {
         setProfile(data);
         setMessage("Profile created successfully!");
+        await revalidatePortfolio();
       }
     }
     setSaving(false);

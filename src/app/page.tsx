@@ -12,6 +12,9 @@ import { Skills } from "./components/skills";
 import { Summary } from "./components/summary";
 import { WorkExperience } from "./components/work-experience";
 
+// Always fetch fresh data from Supabase on each request
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata(): Promise<Metadata> {
   const data = await getPortfolioData();
   return {

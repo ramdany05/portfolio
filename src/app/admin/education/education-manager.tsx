@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { revalidatePortfolio } from "@/app/actions/revalidate";
 import { Button } from "@/components/ui/button";
 import { PlusIcon, Trash2Icon } from "lucide-react";
 
@@ -38,6 +39,7 @@ export function EducationManager({ initialEducation }: EducationManagerProps) {
           eduList.map((e) => (e.id === editingEdu.id ? editingEdu : e))
         );
         setEditingEdu(null);
+        await revalidatePortfolio();
       }
     } else {
       const { data, error } = await supabase
@@ -48,6 +50,7 @@ export function EducationManager({ initialEducation }: EducationManagerProps) {
       if (!error && data) {
         setEduList([...eduList, data[0]]);
         setEditingEdu(null);
+        await revalidatePortfolio();
       }
     }
   };
@@ -58,6 +61,7 @@ export function EducationManager({ initialEducation }: EducationManagerProps) {
     const { error } = await supabase.from("education").delete().eq("id", id);
     if (!error) {
       setEduList(eduList.filter((e) => e.id !== id));
+      await revalidatePortfolio();
     }
   };
 

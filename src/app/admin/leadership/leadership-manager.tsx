@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { revalidatePortfolio } from "@/app/actions/revalidate";
 import { Button } from "@/components/ui/button";
 import { PlusIcon, Trash2Icon } from "lucide-react";
 
@@ -44,6 +45,7 @@ export function LeadershipManager({
           leadershipList.map((l) => (l.id === editingItem.id ? editingItem : l))
         );
         setEditingItem(null);
+        await revalidatePortfolio();
       }
     } else {
       const { data, error } = await supabase
@@ -54,6 +56,7 @@ export function LeadershipManager({
       if (!error && data) {
         setLeadershipList([...leadershipList, data[0]]);
         setEditingItem(null);
+        await revalidatePortfolio();
       }
     }
   };
@@ -63,6 +66,7 @@ export function LeadershipManager({
     const { error } = await supabase.from("leadership").delete().eq("id", id);
     if (!error) {
       setLeadershipList(leadershipList.filter((l) => l.id !== id));
+      await revalidatePortfolio();
     }
   };
 

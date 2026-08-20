@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { revalidatePortfolio } from "@/app/actions/revalidate";
 import { Button } from "@/components/ui/button";
 import { PlusIcon, Trash2Icon } from "lucide-react";
 
@@ -46,6 +47,7 @@ export function ProjectsManager({ initialProjects }: ProjectsManagerProps) {
           projects.map((p) => (p.id === editingProject.id ? editingProject : p))
         );
         setEditingProject(null);
+        await revalidatePortfolio();
       }
     } else {
       const { data, error } = await supabase
@@ -56,6 +58,7 @@ export function ProjectsManager({ initialProjects }: ProjectsManagerProps) {
       if (!error && data) {
         setProjects([...projects, data[0]]);
         setEditingProject(null);
+        await revalidatePortfolio();
       }
     }
   };
@@ -65,6 +68,7 @@ export function ProjectsManager({ initialProjects }: ProjectsManagerProps) {
     const { error } = await supabase.from("projects").delete().eq("id", id);
     if (!error) {
       setProjects(projects.filter((p) => p.id !== id));
+      await revalidatePortfolio();
     }
   };
 

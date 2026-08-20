@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { revalidatePortfolio } from "@/app/actions/revalidate";
 import { Button } from "@/components/ui/button";
 import { PlusIcon, Trash2Icon } from "lucide-react";
 
@@ -46,6 +47,7 @@ export function WorkManager({ initialWork }: WorkManagerProps) {
           workList.map((w) => (w.id === editingWork.id ? editingWork : w))
         );
         setEditingWork(null);
+        await revalidatePortfolio();
       }
     } else {
       const { data, error } = await supabase
@@ -56,6 +58,7 @@ export function WorkManager({ initialWork }: WorkManagerProps) {
       if (!error && data) {
         setWorkList([...workList, data[0]]);
         setEditingWork(null);
+        await revalidatePortfolio();
       }
     }
   };
@@ -69,6 +72,7 @@ export function WorkManager({ initialWork }: WorkManagerProps) {
       .eq("id", id);
     if (!error) {
       setWorkList(workList.filter((w) => w.id !== id));
+      await revalidatePortfolio();
     }
   };
 

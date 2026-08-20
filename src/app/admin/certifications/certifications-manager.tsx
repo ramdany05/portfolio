@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { revalidatePortfolio } from "@/app/actions/revalidate";
 import { Button } from "@/components/ui/button";
 import { PlusIcon, Trash2Icon } from "lucide-react";
 
@@ -40,6 +41,7 @@ export function CertificationsManager({
           certList.map((c) => (c.id === editingCert.id ? editingCert : c))
         );
         setEditingCert(null);
+        await revalidatePortfolio();
       }
     } else {
       const { data, error } = await supabase
@@ -50,6 +52,7 @@ export function CertificationsManager({
       if (!error && data) {
         setCertList([...certList, data[0]]);
         setEditingCert(null);
+        await revalidatePortfolio();
       }
     }
   };
@@ -62,6 +65,7 @@ export function CertificationsManager({
       .eq("id", id);
     if (!error) {
       setCertList(certList.filter((c) => c.id !== id));
+      await revalidatePortfolio();
     }
   };
 

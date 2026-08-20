@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { revalidatePortfolio } from "@/app/actions/revalidate";
 import { Button } from "@/components/ui/button";
 import { PlusIcon, Trash2Icon } from "lucide-react";
 
@@ -41,6 +42,7 @@ export function SkillsManager({ initialSkills }: SkillsManagerProps) {
           )
         );
         setEditingCategory(null);
+        await revalidatePortfolio();
       }
     } else {
       const { data, error } = await supabase
@@ -51,6 +53,7 @@ export function SkillsManager({ initialSkills }: SkillsManagerProps) {
       if (!error && data) {
         setSkillList([...skillList, data[0]]);
         setEditingCategory(null);
+        await revalidatePortfolio();
       }
     }
   };
@@ -61,6 +64,7 @@ export function SkillsManager({ initialSkills }: SkillsManagerProps) {
     const { error } = await supabase.from("skills").delete().eq("id", id);
     if (!error) {
       setSkillList(skillList.filter((s) => s.id !== id));
+      await revalidatePortfolio();
     }
   };
 
