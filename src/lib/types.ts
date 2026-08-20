@@ -75,7 +75,8 @@ export interface ResumeData {
     images?: readonly string[];
     detailedDescription?: string;
     role?: string;
-    duration?: string;
+    start_date?: string;
+    end_date?: string;
     features?: readonly string[];
     github?: string;
     link?: {

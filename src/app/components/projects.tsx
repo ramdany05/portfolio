@@ -211,7 +211,6 @@ function ProjectDetailModal({
   onClose,
 }: ProjectDetailModalProps) {
   if (!project) return null;
-
   const {
     title,
     description,
@@ -220,7 +219,8 @@ function ProjectDetailModal({
     image,
     images,
     role,
-    duration,
+    start_date,
+    end_date,
     features,
     github,
     link,
@@ -228,15 +228,32 @@ function ProjectDetailModal({
 
   const allImages = images && images.length > 0 ? images : image ? [image] : [];
 
+  // Format "YYYY-MM" to "Mon YYYY"
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return null;
+    const [year, month] = dateStr.split("-");
+    if (!month) return year; // plain year fallback
+    const date = new Date(Number(year), Number(month) - 1);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  const formattedStart = formatDate(start_date);
+  const formattedEnd = end_date ? formatDate(end_date) : "Present";
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto border-2 border-foreground shadow-brutal sm:rounded-sm">
         <DialogHeader className="space-y-1">
           <div className="flex flex-wrap items-center justify-between gap-2 pr-6">
             <DialogTitle className="text-2xl font-bold">{title}</DialogTitle>
-            {duration && (
+            {(formattedStart || formattedEnd) && (
               <span className="font-mono text-xs font-semibold text-muted-foreground">
-                {duration}
+                {formattedStart}
+                {formattedStart && " — "}
+                {formattedEnd}
               </span>
             )}
           </div>

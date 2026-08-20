@@ -12,7 +12,8 @@ interface Project {
   description: string;
   detailed_description?: string;
   role?: string;
-  duration?: string;
+  start_date?: string;
+  end_date?: string;
   tech_stack: string[];
   features: string[];
   image?: string;
@@ -173,6 +174,45 @@ export function ProjectsManager({ initialProjects }: ProjectsManagerProps) {
                 value={editingProject.role || ""}
                 onChange={(e) =>
                   setEditingProject({ ...editingProject, role: e.target.value })
+                }
+                className="w-full rounded-sm border border-foreground bg-background p-2 text-sm"
+              />
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className="block text-xs font-mono font-bold mb-1">
+                Start Date
+              </label>
+              <input
+                type="month"
+                value={editingProject.start_date || ""}
+                onChange={(e) =>
+                  setEditingProject({
+                    ...editingProject,
+                    start_date: e.target.value,
+                  })
+                }
+                className="w-full rounded-sm border border-foreground bg-background p-2 text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-mono font-bold mb-1">
+                End Date{" "}
+                <span className="font-normal text-foreground/50">
+                  (leave blank if ongoing)
+                </span>
+              </label>
+              <input
+                type="month"
+                value={editingProject.end_date || ""}
+                onChange={(e) =>
+                  setEditingProject({
+                    ...editingProject,
+                    end_date: e.target.value,
+                  })
                 }
                 className="w-full rounded-sm border border-foreground bg-background p-2 text-sm"
               />

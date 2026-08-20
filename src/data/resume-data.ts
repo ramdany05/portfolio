@@ -203,7 +203,8 @@ export const RESUME_DATA: ResumeData = {
       detailedDescription:
         "Full-stack job-aggregation platform serving 1,677+ live Indonesian tech jobs from 5 sources. Engineered a multi-strategy scraping pipeline (public APIs, Playwright headless browsers with anti-bot bypass) refreshing every 5 minutes, plus a per-user match scoring engine with automated Telegram alerts.",
       role: "Lead Fullstack Developer",
-      duration: "2024",
+      start_date: "Jan 2024",
+      end_date: "Dec 2024",
       features: [
         "Multi-strategy scraping pipeline refreshing every 5 minutes",
         "Bypass anti-bot mechanisms using Playwright headless browsers",
@@ -224,7 +225,8 @@ export const RESUME_DATA: ResumeData = {
       detailedDescription:
         "Solo-built compensation management web app with multi-module dashboard covering position management, job evaluation, compensation calculation, approval workflows, and reporting. Developed as an Academic HRIS project with a case study on PT Linkar Aneka Konstruksi Indonesia.",
       role: "Solo Developer",
-      duration: "2024",
+      start_date: "Mar 2024",
+      end_date: "Jun 2024",
       features: [
         "Position management and hierarchy structure",
         "Job evaluation and point factor method calculation",
@@ -241,7 +243,8 @@ export const RESUME_DATA: ResumeData = {
       detailedDescription:
         "Solo-built restaurant discovery and recommendation web app for the Pakansari area, featuring category-based search, recommendations, and interactive mapping via Google Maps Embed API. Built as an academic GIS project to aid local food exploration.",
       role: "Solo Developer",
-      duration: "2024",
+      start_date: "Mar 2024",
+      end_date: "Jun 2024",
       features: [
         "Interactive Google Maps Embed integration",
         "Category and tag-based culinary search filter",
