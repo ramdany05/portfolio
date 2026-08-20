@@ -4,7 +4,14 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { revalidatePortfolio } from "@/app/actions/revalidate";
 import { Button } from "@/components/ui/button";
-import { PlusIcon, Trash2Icon } from "lucide-react";
+import {
+  PlusIcon,
+  Trash2Icon,
+  UploadIcon,
+  XIcon,
+  ImageIcon,
+} from "lucide-react";
+import { v4 as uuidv4 } from "uuid";
 
 interface Project {
   id?: string;
@@ -30,8 +37,69 @@ interface ProjectsManagerProps {
 export function ProjectsManager({ initialProjects }: ProjectsManagerProps) {
   const [projects, setProjects] = useState<Project[]>(initialProjects);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   const supabase = createClient();
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0 || !editingProject) return;
+
+    setUploading(true);
+    const newImageUrls: string[] = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${uuidv4()}.${fileExt}`;
+      const filePath = `projects/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("portfolio-images")
+        .upload(filePath, file);
+
+      if (uploadError) {
+        console.error("Upload error:", uploadError);
+        alert(`Failed to upload ${file.name}: ${uploadError.message}`);
+        continue;
+      }
+
+      const { data: publicUrlData } = supabase.storage
+        .from("portfolio-images")
+        .getPublicUrl(filePath);
+
+      if (publicUrlData?.publicUrl) {
+        newImageUrls.push(publicUrlData.publicUrl);
+      }
+    }
+
+    const updatedImages = [...(editingProject.images || []), ...newImageUrls];
+    const updatedThumbnail =
+      updatedImages.length > 0 ? updatedImages[0] : editingProject.image;
+
+    setEditingProject({
+      ...editingProject,
+      images: updatedImages,
+      image: updatedThumbnail,
+    });
+
+    setUploading(false);
+  };
+
+  const handleRemoveImage = (indexToRemove: number) => {
+    if (!editingProject) return;
+    const updatedImages = editingProject.images.filter(
+      (_, idx) => idx !== indexToRemove
+    );
+    const updatedThumbnail =
+      updatedImages.length > 0 ? updatedImages[0] : undefined;
+
+    setEditingProject({
+      ...editingProject,
+      images: updatedImages,
+      image: updatedThumbnail,
+    });
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -252,6 +320,68 @@ export function ProjectsManager({ initialProjects }: ProjectsManagerProps) {
               }
               className="w-full rounded-sm border border-foreground bg-background p-2 text-sm"
             />
+          </div>
+
+          {/* Image Uploader & Gallery Preview */}
+          <div className="space-y-3 rounded-sm border border-foreground/20 bg-muted/20 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="font-mono text-xs font-bold uppercase tracking-wider">
+                  Project Screenshots & Gallery
+                </h4>
+                <p className="text-xs text-foreground/60">
+                  Upload images to Supabase Storage. The first image will be
+                  used as the project thumbnail.
+                </p>
+              </div>
+
+              <label className="flex cursor-pointer items-center gap-1.5 rounded-sm border-2 border-foreground bg-background px-3 py-1.5 font-mono text-xs font-bold shadow-brutal-sm transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-brutal">
+                <UploadIcon className="size-3.5" />
+                <span>{uploading ? "Uploading..." : "Upload Images"}</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  disabled={uploading}
+                  onChange={handleFileUpload}
+                  className="sr-only"
+                />
+              </label>
+            </div>
+
+            {editingProject.images && editingProject.images.length > 0 ? (
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 pt-2">
+                {editingProject.images.map((imgUrl, idx) => (
+                  <div
+                    key={imgUrl}
+                    className="group relative overflow-hidden rounded-sm border-2 border-foreground bg-card shadow-brutal-sm"
+                  >
+                    <img
+                      src={imgUrl}
+                      alt={`Project preview ${idx + 1}`}
+                      className="h-24 w-full object-cover"
+                    />
+                    {idx === 0 && (
+                      <span className="absolute bottom-1 left-1 rounded border border-foreground bg-primary px-1.5 py-0.5 font-mono text-[9px] font-bold text-primary-foreground">
+                        Thumbnail
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage(idx)}
+                      className="absolute right-1 top-1 rounded-sm border border-foreground bg-destructive p-1 text-destructive-foreground opacity-90 transition-opacity hover:opacity-100"
+                      aria-label="Remove image"
+                    >
+                      <XIcon className="size-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex h-20 items-center justify-center rounded-sm border border-dashed border-foreground/30 font-mono text-xs text-foreground/40">
+                <ImageIcon className="mr-2 size-4" /> No images uploaded yet
+              </div>
+            )}
           </div>
 
           <div className="flex gap-3 pt-2">
